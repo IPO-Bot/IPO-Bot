@@ -66,7 +66,6 @@ Filled Date: ${wtd.filedDate}
 Offer Amount: ${wtd.dollarValueOfSharesOffered} `;
         tweetID = await makeTweet(tweet, true, tweetID);
         console.log(tweet);
-        break;
     }
 
 }
@@ -102,6 +101,9 @@ async function publicCompanies() {
         await makeTweet(tweet, false);
         console.log(tweet);
     }
+    else {
+        console.log('No Public Companies to tweet about!');
+    }
 
 }
 
@@ -118,6 +120,7 @@ async function getIPOdata(date) {
         return response.data.data.upcoming.upcomingTable.rows;
     }
     catch (e) {
+        console.log(e);
         return [];
     }
 }
