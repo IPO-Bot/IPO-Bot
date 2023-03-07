@@ -5,6 +5,8 @@ var config = require('./configTwit');
 const client = new TwitterApi(config);
 var CronJob = require('cron').CronJob;
 
+getIPOdata('2023-07');
+
 var job = new CronJob('0 * * * *', function () {
     let date = new Date();
     var offset = -300; //Timezone offset for EST in minutes.
