@@ -5,24 +5,6 @@ var config = require('./configTwit');
 const client = new TwitterApi(config);
 var CronJob = require('cron').CronJob;
 
-test();
-async function test() {
-    const date = getDate();
-    //await getIPOdata(date);
-
-    const options = {
-        token: "E5D88D49121AF9D2B62EFD54A2B52427",
-        url: "https://api.nasdaq.com/api/ipo/calendar?date=2023-03",
-    };
-
-    axios.post("https://scraperbox.com/api/scrape", options)
-        .then(response => {
-            console.log(response.data)
-        }).catch(error => {
-            console.error(error.response.data.errors || error)
-        });
-}
-
 var job = new CronJob('0 * * * *', function () {
     let date = new Date();
     var offset = -300; //Timezone offset for EST in minutes.
@@ -127,16 +109,12 @@ async function publicCompanies() {
 
 async function getIPOdata(date) {
     try {
-        var options = {
-            method: 'GET',
-            url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
-            headers: {
-                'Content-Type': 'application/json',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
-            }
+        const options = {
+            token: "E5D88D49121AF9D2B62EFD54A2B52427",
+            url: "https://api.nasdaq.com/api/ipo/calendar?date=2023-03",
         };
 
-        let response = await axios.request(options);
+        const response = await axios.post("https://scraperbox.com/api/scrape", options);
         console.log(response);
         if (response.data.data.upcoming.upcomingTable.rows == null) { return []; }
         return response.data.data.upcoming.upcomingTable.rows;
@@ -149,17 +127,12 @@ async function getIPOdata(date) {
 
 async function getWithdarawlsdata(date) {
     try {
-        var options = {
-            method: 'GET',
-            url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
-            headers: {
-                'Content-Type': 'application/json',
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
-
-            }
+        const options = {
+            token: "E5D88D49121AF9D2B62EFD54A2B52427",
+            url: "https://api.nasdaq.com/api/ipo/calendar?date=2023-03",
         };
 
-        let response = await axios.request(options);
+        const response = await axios.post("https://scraperbox.com/api/scrape", options);
         console.log(response);
         if (response.data.data.withdrawn.rows == null) { return []; }
         return response.data.data.withdrawn.rows;
