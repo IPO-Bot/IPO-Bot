@@ -1,5 +1,5 @@
 var axios = require("axios").default;
-console.log('IPO Alert Bot!');
+console.log('Follow Alert Bot!');
 const { TwitterApi } = require('twitter-api-v2');
 var config = require('./configTwit');
 const client = new TwitterApi(config);
@@ -8,8 +8,19 @@ var CronJob = require('cron').CronJob;
 test();
 async function test() {
     const date = getDate();
-    date.trim();
-    await getIPOdata(date);
+    //await getIPOdata(date);
+
+    const options = {
+        token: "E5D88D49121AF9D2B62EFD54A2B52427",
+        url: "https://api.nasdaq.com/api/ipo/calendar?date=2023-03",
+    };
+
+    axios.post("https://scraperbox.com/api/scrape", options)
+        .then(response => {
+            console.log(response.data)
+        }).catch(error => {
+            console.error(error.response.data.errors || error)
+        });
 }
 
 var job = new CronJob('0 * * * *', function () {
@@ -120,8 +131,8 @@ async function getIPOdata(date) {
             method: 'GET',
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351',
-                'Accept': '*/*'
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
             }
         };
 
@@ -142,8 +153,9 @@ async function getWithdarawlsdata(date) {
             method: 'GET',
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351',
-                'Accept': '*/*'
+                'Content-Type': 'application/json',
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
+
             }
         };
 
