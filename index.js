@@ -8,6 +8,7 @@ var CronJob = require('cron').CronJob;
 test();
 async function test() {
     const date = getDate();
+    date.trim();
     await getIPOdata(date);
 }
 
@@ -176,7 +177,7 @@ function getDate() {
     estDate = estDate.toISOString();
     estDate = estDate.split('-');
     estDate = `${estDate[0]}-${estDate[1]} `;
-    return estDate;
+    return estDate.trim();
 }
 
 function isToday(someDate) {
