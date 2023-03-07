@@ -7,19 +7,9 @@ var CronJob = require('cron').CronJob;
 
 test();
 async function test() {
-    //const date = getDate();
+    const date = getDate();
+    console.log(date);
     //await getIPOdata(date);
-
-    var options = {
-        method: 'GET',
-        url: `https://www.7timer.info/bin/astro.php?lon=113.2&lat=23.1&ac=0&unit=metric&output=json&tzshift=0`,
-        headers: {
-            'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
-        }
-    };
-
-    let response = await axios.request(options);
-    console.log(response);
 }
 
 var job = new CronJob('0 * * * *', function () {
