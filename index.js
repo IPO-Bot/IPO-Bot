@@ -1,5 +1,5 @@
 var axios = require("axios").default;
-console.log('Follow Alert Bot!');
+console.log('IPO Alert Bot!');
 const { TwitterApi } = require('twitter-api-v2');
 var config = require('./configTwit');
 const client = new TwitterApi(config);
@@ -111,7 +111,7 @@ async function getIPOdata(date) {
     try {
         const options = {
             token: "E5D88D49121AF9D2B62EFD54A2B52427",
-            url: "https://api.nasdaq.com/api/ipo/calendar?date=2023-03",
+            url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
         };
 
         const response = await axios.post("https://scraperbox.com/api/scrape", options);
@@ -129,7 +129,7 @@ async function getWithdarawlsdata(date) {
     try {
         const options = {
             token: "E5D88D49121AF9D2B62EFD54A2B52427",
-            url: "https://api.nasdaq.com/api/ipo/calendar?date=2023-03",
+            url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
         };
 
         const response = await axios.post("https://scraperbox.com/api/scrape", options);
