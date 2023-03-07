@@ -120,8 +120,7 @@ async function getIPOdata(date) {
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
-            },
-            timeout: 30000
+            }
         };
 
         let response = await axios.request(options);
@@ -142,8 +141,7 @@ async function getWithdarawlsdata(date) {
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
             headers: {
                 'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
-            },
-            timeout: 30000
+            }
         };
 
         let response = await axios.request(options);
