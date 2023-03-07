@@ -5,7 +5,11 @@ var config = require('./configTwit');
 const client = new TwitterApi(config);
 var CronJob = require('cron').CronJob;
 
-getIPOdata('2023-07');
+test();
+async function test(){
+     const date = getDate();
+        await getIPOdata(date);
+}
 
 var job = new CronJob('0 * * * *', function () {
     let date = new Date();
