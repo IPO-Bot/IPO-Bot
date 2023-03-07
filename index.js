@@ -8,8 +8,7 @@ var CronJob = require('cron').CronJob;
 test();
 async function test() {
     const date = getDate();
-    console.log(date);
-    //await getIPOdata(date);
+    await getIPOdata(date);
 }
 
 var job = new CronJob('0 * * * *', function () {
@@ -120,7 +119,8 @@ async function getIPOdata(date) {
             method: 'GET',
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351',
+                'Accept': '*/*'
             }
         };
 
@@ -141,7 +141,8 @@ async function getWithdarawlsdata(date) {
             method: 'GET',
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
             headers: {
-                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351',
+                'Accept': '*/*'
             }
         };
 
