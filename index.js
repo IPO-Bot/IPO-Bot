@@ -6,9 +6,9 @@ const client = new TwitterApi(config);
 var CronJob = require('cron').CronJob;
 
 test();
-async function test(){
-     const date = getDate();
-        await getIPOdata(date);
+async function test() {
+    const date = getDate();
+    await getIPOdata(date);
 }
 
 var job = new CronJob('0 * * * *', function () {
@@ -118,6 +118,10 @@ async function getIPOdata(date) {
         var options = {
             method: 'GET',
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
+            },
+            timeout: 30000
         };
 
         let response = await axios.request(options);
@@ -136,6 +140,10 @@ async function getWithdarawlsdata(date) {
         var options = {
             method: 'GET',
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
+            headers: {
+                'User-Agent': 'Mozilla/5.0 (Windows NT 6.2) AppleWebKit/5351 (KHTML, like Gecko) Chrome/40.0.819.0 Mobile Safari/5351'
+            },
+            timeout: 30000
         };
 
         let response = await axios.request(options);
