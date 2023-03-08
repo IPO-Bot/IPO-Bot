@@ -1,11 +1,9 @@
 var axios = require("axios").default;
-console.log('IPO Alert Bot!');
+console.log('Follow Alert Bot!');
 const { TwitterApi } = require('twitter-api-v2');
 var config = require('./configTwit');
 const client = new TwitterApi(config);
 var CronJob = require('cron').CronJob;
-
-publicCompanies();
 
 var job = new CronJob('0 * * * *', function () {
     let date = new Date();
@@ -178,7 +176,8 @@ function isToday(someDate) {
         replace(/\..+/, '')
     estDate = estDate.split(' ');
     estDate = estDate[0].split('-');
-    estDate = `${estDate[1]}/${estDate[2]}/${estDate[0]}`
+    estDate = `${estDate[1]}/${estDate[2]}/${estDate[0]}`;
+    if (estDate.startsWith('0')) { estDate = estDate.replace('0', ''); }
     if (estDate == someDate) {
         return true;
     }
