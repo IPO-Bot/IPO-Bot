@@ -1,5 +1,5 @@
 var axios = require("axios").default;
-console.log('Follow Alert Bot!');
+console.log('IPO Alert Bot!');
 const { TwitterApi } = require('twitter-api-v2');
 var config = require('./configTwit');
 const client = new TwitterApi(config);
@@ -35,7 +35,7 @@ async function processIPOs() {
         return;
     }
     for (let IPO of IPOs) {
-        let tweet = `Symbol: ${IPO.proposedTickerSymbol}
+        let tweet = `Symbol: $${IPO.proposedTickerSymbol}
 Company: ${IPO.companyName}
 Exchange: ${IPO.proposedExchange}
 Price: ${IPO.proposedSharePrice} USD
@@ -79,7 +79,6 @@ async function publicCompanies() {
     for (let IPO of IPOs) {
         let proceed = isToday(IPO.expectedPriceDate);
         if (proceed == true) {
-            console.log('Yes');
             if (withdrawns.length > 0) {
                 for (let wtd of withdrawns) {
                     if (wtd.companyName == IPO.companyName) {
@@ -93,51 +92,75 @@ async function publicCompanies() {
         }
     }
 
+    //New Tweet Format
+    let tweetID;
     if (whiteCompanies.length > 0) {
-        let tweet = `These companies are going public today!🧵\n\n`;
-        for (let i = 0; i < whiteCompanies.length; i++) {
-            tweet = tweet + `${i + 1}. ${whiteCompanies[0].companyName}`;
-        }
-        await makeTweet(tweet, false);
-        console.log(tweet);
+        tweetID = await makeTweet(`These companies are going public today!🧵\nTotal: ${whiteCompanies.length}`, false);
     }
     else {
         console.log('No Public Companies to tweet about!');
+        return;
+    }
+    for (let IPO of whiteCompanies) {
+        let tweet = `Symbol: $${IPO.proposedTickerSymbol}
+Company: ${IPO.companyName}
+Exchange: ${IPO.proposedExchange}
+Price: ${IPO.proposedSharePrice} USD
+Shares: ${IPO.sharesOffered}
+Expected IPO Date: ${IPO.expectedPriceDate}
+Offer Amount: ${IPO.dollarValueOfSharesOffered} `;
+        tweetID = await makeTweet(tweet, true, tweetID);
     }
 
 }
 
 async function getIPOdata(date) {
+    let response;
     try {
         const options = {
             token: "E5D88D49121AF9D2B62EFD54A2B52427",
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
         };
 
-        const response = await axios.post("https://scraperbox.com/api/scrape", options);
+        response = await axios.post("https://scraperbox.com/api/scrape", options);
         console.log(response);
+
         if (response.data.data.upcoming.upcomingTable.rows == null) { return []; }
         return response.data.data.upcoming.upcomingTable.rows;
     }
     catch (e) {
-        console.log(e);
+        let data = response.data;
+        if (data.includes('>{"data"') && data.includes('}}</pre></body></html>')) {
+            data = data.substring(data.indexOf('>{"data"') + 1, data.indexOf('}}</pre></body></html>') + 2);
+            data = JSON.parse(data);
+            return data.data.upcoming.upcomingTable.rows;
+
+        }
         return [];
     }
 }
 
 async function getWithdarawlsdata(date) {
+    let response;
     try {
         const options = {
             token: "E5D88D49121AF9D2B62EFD54A2B52427",
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
         };
 
-        const response = await axios.post("https://scraperbox.com/api/scrape", options);
+        response = await axios.post("https://scraperbox.com/api/scrape", options);
         console.log(response);
         if (response.data.data.withdrawn.rows == null) { return []; }
         return response.data.data.withdrawn.rows;
     }
     catch (e) {
+        let data = response.data;
+        if (data.includes('>{"data"') && data.includes('}}</pre></body></html>')) {
+            data = data.substring(data.indexOf('>{"data"') + 1, data.indexOf('}}</pre></body></html>') + 2);
+            data = JSON.parse(data);
+            return data.data.withdrawn.rows;
+
+        }
         return [];
     }
 }
