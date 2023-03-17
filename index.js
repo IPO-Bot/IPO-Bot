@@ -4,6 +4,9 @@ const { TwitterApi } = require('twitter-api-v2');
 var config = require('./configTwit');
 const client = new TwitterApi(config);
 var CronJob = require('cron').CronJob;
+const rapid_api_key = 'ae713832c3msh1c585698a54c864p1a9a48jsn41a13848c582';
+const rapid_host = 'scrapers-proxy2.p.rapidapi.com';
+
 
 var job = new CronJob('0 * * * *', function () {
     let date = new Date();
@@ -117,25 +120,24 @@ Offer Amount: ${IPO.dollarValueOfSharesOffered} `;
 async function getIPOdata(date) {
     let response;
     try {
+
         const options = {
-            token: "E5D88D49121AF9D2B62EFD54A2B52427",
+            method: 'GET',
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
+            params: { url: 'https://www.amazon.com' },
+            headers: {
+                'X-RapidAPI-Key': rapid_api_key,
+                'X-RapidAPI-Host': rapid_host
+            }
         };
 
-        response = await axios.post("https://scraperbox.com/api/scrape", options);
+        response = await axios.request(options);
         console.log(response);
 
         if (response.data.data.upcoming.upcomingTable.rows == null) { return []; }
         return response.data.data.upcoming.upcomingTable.rows;
     }
     catch (e) {
-        let data = response.data;
-        if (data.includes('>{"data"') && data.includes('}}</pre></body></html>')) {
-            data = data.substring(data.indexOf('>{"data"') + 1, data.indexOf('}}</pre></body></html>') + 2);
-            data = JSON.parse(data);
-            return data.data.upcoming.upcomingTable.rows;
-
-        }
         return [];
     }
 }
@@ -144,28 +146,27 @@ async function getWithdarawlsdata(date) {
     let response;
     try {
         const options = {
-            token: "E5D88D49121AF9D2B62EFD54A2B52427",
+            method: 'GET',
             url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
+            params: { url: 'https://www.amazon.com' },
+            headers: {
+                'X-RapidAPI-Key': rapid_api_key,
+                'X-RapidAPI-Host': rapid_host
+            }
         };
 
-        response = await axios.post("https://scraperbox.com/api/scrape", options);
+        response = await axios.request(options);
         console.log(response);
         if (response.data.data.withdrawn.rows == null) { return []; }
         return response.data.data.withdrawn.rows;
     }
     catch (e) {
-        let data = response.data;
-        if (data.includes('>{"data"') && data.includes('}}</pre></body></html>')) {
-            data = data.substring(data.indexOf('>{"data"') + 1, data.indexOf('}}</pre></body></html>') + 2);
-            data = JSON.parse(data);
-            return data.data.withdrawn.rows;
-
-        }
         return [];
     }
 }
 
 async function makeTweet(tweet, isReply, tweetID) {
+    //console.log(tweet);
     if (isReply == true) {
         const reply = await client.v2.reply(tweet, tweetID);
         console.log('Tweet Made: ' + JSON.stringify(reply));
