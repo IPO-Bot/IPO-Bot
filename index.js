@@ -138,6 +138,7 @@ async function getIPOdata(date) {
         return response.data.data.upcoming.upcomingTable.rows;
     }
     catch (e) {
+console.log(e);
         return [];
     }
 }
@@ -161,6 +162,7 @@ async function getWithdarawlsdata(date) {
         return response.data.data.withdrawn.rows;
     }
     catch (e) {
+console.log(e);
         return [];
     }
 }
