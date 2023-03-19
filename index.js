@@ -6,7 +6,10 @@ const client = new TwitterApi(config);
 var CronJob = require('cron').CronJob;
 const rapid_api_key = 'ae713832c3msh1c585698a54c864p1a9a48jsn41a13848c582';
 const rapid_host = 'scrapers-proxy2.p.rapidapi.com';
-
+test();
+async function test(){
+    console.log(await publicCompanies());
+}
 
 var job = new CronJob('0 * * * *', function () {
     let date = new Date();
