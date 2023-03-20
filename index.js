@@ -5,11 +5,8 @@ var config = require('./configTwit');
 const client = new TwitterApi(config);
 var CronJob = require('cron').CronJob;
 const rapid_api_key = 'ae713832c3msh1c585698a54c864p1a9a48jsn41a13848c582';
-const rapid_host = 'scrapers-proxy2.p.rapidapi.com';
-test();
-async function test(){
-    console.log(await publicCompanies());
-}
+const rapid_host = 'scraper-box.p.rapidapi.com';
+
 
 var job = new CronJob('0 * * * *', function () {
     let date = new Date();
@@ -126,8 +123,8 @@ async function getIPOdata(date) {
 
         const options = {
             method: 'GET',
-            url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
-            params: { url: 'https://www.amazon.com' },
+            url: 'https://scraper-box.p.rapidapi.com/browseurl',
+            params: { url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}` },
             headers: {
                 'X-RapidAPI-Key': rapid_api_key,
                 'X-RapidAPI-Host': rapid_host
@@ -141,7 +138,6 @@ async function getIPOdata(date) {
         return response.data.data.upcoming.upcomingTable.rows;
     }
     catch (e) {
-console.log(e);
         return [];
     }
 }
@@ -151,8 +147,8 @@ async function getWithdarawlsdata(date) {
     try {
         const options = {
             method: 'GET',
-            url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
-            params: { url: 'https://www.amazon.com' },
+            url: 'https://scraper-box.p.rapidapi.com/browseurl',
+            params: { url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}` },
             headers: {
                 'X-RapidAPI-Key': rapid_api_key,
                 'X-RapidAPI-Host': rapid_host
@@ -165,7 +161,6 @@ async function getWithdarawlsdata(date) {
         return response.data.data.withdrawn.rows;
     }
     catch (e) {
-console.log(e);
         return [];
     }
 }
