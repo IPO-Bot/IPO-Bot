@@ -4,9 +4,6 @@ const { TwitterApi } = require('twitter-api-v2');
 var config = require('./configTwit');
 const client = new TwitterApi(config);
 var CronJob = require('cron').CronJob;
-const rapid_api_key = 'ae713832c3msh1c585698a54c864p1a9a48jsn41a13848c582';
-const rapid_host = 'scraper-box.p.rapidapi.com';
-
 
 var job = new CronJob('0 * * * *', function () {
     let date = new Date();
@@ -122,13 +119,10 @@ async function getIPOdata(date) {
     try {
 
         const options = {
-            method: 'GET',
-            url: 'https://scraper-box.p.rapidapi.com/browseurl',
-            params: { url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}` },
-            headers: {
-                'X-RapidAPI-Key': rapid_api_key,
-                'X-RapidAPI-Host': rapid_host
-            }
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: `http://api.scraperapi.com?api_key=4a0f6b2783693c29a8fcf90483998c51&url=https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
+            headers: {}
         };
 
         response = await axios.request(options);
@@ -146,13 +140,10 @@ async function getWithdarawlsdata(date) {
     let response;
     try {
         const options = {
-            method: 'GET',
-            url: 'https://scraper-box.p.rapidapi.com/browseurl',
-            params: { url: `https://api.nasdaq.com/api/ipo/calendar?date=${date}` },
-            headers: {
-                'X-RapidAPI-Key': rapid_api_key,
-                'X-RapidAPI-Host': rapid_host
-            }
+            method: 'get',
+            maxBodyLength: Infinity,
+            url: `http://api.scraperapi.com?api_key=4a0f6b2783693c29a8fcf90483998c51&url=https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
+            headers: {}
         };
 
         response = await axios.request(options);
