@@ -10,13 +10,13 @@ var job = new CronJob('0 * * * *', function () {
     var offset = -300; //Timezone offset for EST in minutes.
     var estDate = new Date(date.getTime() + offset * 60 * 1000);
 
-    if (estDate.getDay() == 1 && estDate.getHours() == 9) { //Monday 9AM EST
+    if (estDate.getDay() == 1 && estDate.getHours() == 8) { //Monday 9AM EST
         processIPOs();
     }
-    if (isLastDayOfMonth(estDate) && estDate.getHours() == 9) { //Every Last Day Of the Month
+    if (isLastDayOfMonth(estDate) && estDate.getHours() == 8) { //Every Last Day Of the Month
         processWithdarawls();
     }
-    if (estDate.getHours() == 9) { //Every day at 9AM EST
+    if (estDate.getHours() == 8) { //Every day at 9AM EST
         publicCompanies();
     }
 });
