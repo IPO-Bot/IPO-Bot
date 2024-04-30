@@ -1,4 +1,4 @@
-var axios = require("axios").default;
+var axios = require('axios').default;
 console.log('IPO Alert Bot!');
 const { TwitterApi } = require('twitter-api-v2');
 var config = require('./configTwit');
@@ -10,128 +10,136 @@ var job = new CronJob('0 * * * *', function () {
     var offset = -300; //Timezone offset for EST in minutes.
     var estDate = new Date(date.getTime() + offset * 60 * 1000);
 
-    if (estDate.getDay() == 1 && estDate.getHours() == 8) { //Monday 9AM EST
+    if (estDate.getDay() == 1 && estDate.getHours() == 8) {
+        //Monday 9AM EST
         processIPOs();
     }
-    if (isLastDayOfMonth(estDate) && estDate.getHours() == 8) { //Every Last Day Of the Month
+    if (isLastDayOfMonth(estDate) && estDate.getHours() == 8) {
+        //Every Last Day Of the Month
         processWithdarawls();
     }
-    if (estDate.getHours() == 8) { //Every day at 9AM EST
+    if (estDate.getHours() == 8) {
+        //Every day at 9AM EST
         publicCompanies();
     }
 });
 job.start();
 
 async function processIPOs() {
-    const date = getDate();
-    const IPOs = await getIPOdata(date);
+    const date = getWeekDateRange();
+    const IPOs = await getIPOdataV2(date);
 
     let tweetID;
     if (IPOs.length > 0) {
+        console.log(`Here are this weeks upcoming IPO’s🧵\nTotal: ${IPOs.length} `);
+
         tweetID = await makeTweet(`Here are this weeks upcoming IPO’s🧵\nTotal: ${IPOs.length} `, false);
-    }
-    else {
+    } else {
         console.log('No IPOs to tweet about');
         return;
     }
     for (let IPO of IPOs) {
-        let tweet = `Symbol: $${IPO.proposedTickerSymbol}
-Company: ${IPO.companyName}
-Exchange: ${IPO.proposedExchange}
-Price: ${IPO.proposedSharePrice} USD
-Shares: ${IPO.sharesOffered}
-Expected IPO Date: ${IPO.expectedPriceDate}
-Offer Amount: ${IPO.dollarValueOfSharesOffered} `;
+        let tweet = `Symbol: $${IPO.symbol}
+Company: ${IPO.name}
+Exchange: ${IPO.exchange}
+Price: ${IPO.price} USD
+Shares: ${IPO.numberOfShares}
+Expected IPO Date: ${IPO.date}
+Offer Amount: ${IPO.totalSharesValue} `;
+        console.log(tweet);
+
         tweetID = await makeTweet(tweet, true, tweetID);
     }
 }
 
 async function processWithdarawls() {
-    const date = getDate();
+    const date = getMonthDateRange();
     const withdrawns = await getWithdarawlsdata(date);
+    const whiteCompanies = [];
+    console.log(withdrawns);
+
+    for (let IPO of withdrawns) {
+        if (IPO.status == 'withdrawn') {
+            whiteCompanies.push(IPO);
+        }
+    }
 
     let tweetID;
     if (withdrawns.length > 0) {
+        console.log(`Here are this months IPO withdraws🧵\nTotal: ${whiteCompanies.length}`);
         tweetID = await makeTweet(`Here are this months IPO withdraws🧵\nTotal: ${withdrawns.length} `, false);
-    }
-    else {
+    } else {
         console.log('No Withdarawls to tweet about');
         return;
     }
-    for (let wtd of withdrawns) {
-        let tweet = `Company: ${wtd.companyName}
-Exchange: ${wtd.proposedExchange}
-Shares: ${wtd.sharesOffered}
-Filled Date: ${wtd.filedDate}
-Offer Amount: ${wtd.dollarValueOfSharesOffered} `;
+    for (let wtd of whiteCompanies) {
+        let tweet = `Company: ${wtd.name}
+Exchange: ${wtd.exchange}
+Shares: ${wtd.numberOfShares}
+Filled Date: ${wtd.date}
+Offer Amount: ${wtd.totalSharesValue} `;
         tweetID = await makeTweet(tweet, true, tweetID);
         console.log(tweet);
     }
-
 }
 
 async function publicCompanies() {
-    const date = getDate();
-    const IPOs = await getIPOdata(date);
-    const withdrawns = await getWithdarawlsdata(date);
+    const date = getWeekDateRange();
+    const IPOs = await getIPOdataV2(date);
+
     const whiteCompanies = [];
 
     for (let IPO of IPOs) {
-        let proceed = isToday(IPO.expectedPriceDate);
-        if (proceed == true) {
-            if (withdrawns.length > 0) {
-                for (let wtd of withdrawns) {
-                    if (wtd.companyName == IPO.companyName) {
-                        proceed = false;
-                    }
-                }
-            }
-            if (proceed == true) {
-                whiteCompanies.push(IPO);
-            }
+        console.log(IPO.date);
+
+        let proceed = isToday(IPO.date);
+        if (proceed == true && IPO.status == 'withdrawn') {
+            whiteCompanies.push(IPO);
         }
     }
 
     //New Tweet Format
     let tweetID;
     if (whiteCompanies.length > 0) {
+        console.log(`These companies are going public today!🧵\nTotal: ${whiteCompanies.length}`);
+
         tweetID = await makeTweet(`These companies are going public today!🧵\nTotal: ${whiteCompanies.length}`, false);
-    }
-    else {
+    } else {
         console.log('No Public Companies to tweet about!');
         return;
     }
     for (let IPO of whiteCompanies) {
         let tweet = `Symbol: $${IPO.proposedTickerSymbol}
-Company: ${IPO.companyName}
-Exchange: ${IPO.proposedExchange}
-Price: ${IPO.proposedSharePrice} USD
-Shares: ${IPO.sharesOffered}
-Expected IPO Date: ${IPO.expectedPriceDate}
-Offer Amount: ${IPO.dollarValueOfSharesOffered} `;
+Company: ${IPO.name}
+Exchange: ${IPO.exchange}
+Price: ${IPO.price} USD
+Shares: ${IPO.numberOfShares}
+Expected IPO Date: ${IPO.date}
+Offer Amount: ${IPO.totalSharesValue} `;
+        console.log(tweet);
+
         tweetID = await makeTweet(tweet, true, tweetID);
     }
-
 }
 
-async function getIPOdata(date) {
+async function getIPOdataV2(date) {
     let response;
     try {
-
         const options = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: `http://api.scraperapi.com?api_key=4a0f6b2783693c29a8fcf90483998c51&url=https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
-            headers: {}
+            url: `https://finnhub.io/api/v1/calendar/ipo?from=${date[0]}&to=${date[1]}&token=coodgspr01qm6hd1gdl0coodgspr01qm6hd1gdlg`,
+            headers: {},
         };
 
         response = await axios.request(options);
         console.log(response);
 
-        if (response.data.data.upcoming.upcomingTable.rows == null) { return []; }
-        return response.data.data.upcoming.upcomingTable.rows;
-    }
-    catch (e) {
+        if (response.data.ipoCalendar == null || response.data.ipoCalendar.length == 0) {
+            return [];
+        }
+        return response.data.ipoCalendar;
+    } catch (e) {
         return [];
     }
 }
@@ -142,16 +150,18 @@ async function getWithdarawlsdata(date) {
         const options = {
             method: 'get',
             maxBodyLength: Infinity,
-            url: `http://api.scraperapi.com?api_key=4a0f6b2783693c29a8fcf90483998c51&url=https://api.nasdaq.com/api/ipo/calendar?date=${date}`,
-            headers: {}
+            url: `https://finnhub.io/api/v1/calendar/ipo?from=${date[0]}&to=${date[1]}&token=coodgspr01qm6hd1gdl0coodgspr01qm6hd1gdlg`,
+            headers: {},
         };
 
         response = await axios.request(options);
         console.log(response);
-        if (response.data.data.withdrawn.rows == null) { return []; }
-        return response.data.data.withdrawn.rows;
-    }
-    catch (e) {
+
+        if (response.data.ipoCalendar == null || response.data.ipoCalendar.length == 0) {
+            return [];
+        }
+        return response.data.ipoCalendar;
+    } catch (e) {
         return [];
     }
 }
@@ -162,43 +172,68 @@ async function makeTweet(tweet, isReply, tweetID) {
         const reply = await client.v2.reply(tweet, tweetID);
         console.log('Tweet Made: ' + JSON.stringify(reply));
         return reply.data.id;
-    }
-    else {
+    } else {
         const posted = await client.v2.tweet(tweet);
         console.log('Tweet Made: ' + JSON.stringify(posted));
         return posted.data.id;
     }
 }
 
-function getDate() {
-    let date = new Date();
-    var offset = -300; //Timezone offset for EST in minutes.
-    var estDate = new Date(date.getTime() + offset * 60 * 1000);
-    estDate = estDate.toISOString();
-    estDate = estDate.split('-');
-    estDate = `${estDate[0]}-${estDate[1]} `;
-    return estDate.trim();
-}
-
 function isToday(someDate) {
+    // Parse the input date string
+    const [year, month, day] = someDate.split('-').map(Number);
 
-    const date = new Date();
-    var offset = -300; //Timezone offset for EST in minutes.
-    var estDate = new Date(date.getTime() + offset * 60 * 1000);
+    // Get today's date
+    const today = new Date();
+    const todayYear = today.getFullYear();
+    const todayMonth = today.getMonth() + 1; // Month is zero-indexed
+    const todayDay = today.getDate();
 
-    estDate = estDate.toISOString().
-        replace(/T/, ' ').
-        replace(/\..+/, '')
-    estDate = estDate.split(' ');
-    estDate = estDate[0].split('-');
-    estDate = `${estDate[1]}/${estDate[2]}/${estDate[0]}`;
-    if (estDate.startsWith('0')) { estDate = estDate.replace('0', ''); }
-    if (estDate == someDate) {
-        return true;
-    }
-    return false;
+    // Compare the input date with today's date
+    return year === todayYear && month === todayMonth && day === todayDay;
 }
 
 function isLastDayOfMonth(date) {
     return date.getDate() == new Date(date.getFullYear(), date.getMonth() + 1, 0).getDate();
+}
+
+//V2 DATE FUNCTIONS
+function getWeekDateRange() {
+    // Get today's date
+    const today = new Date();
+
+    // Calculate the date after one week
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 7);
+
+    // Format dates as 'YYYY-MM-DD'
+    const formattedToday = formatDate(today);
+    const formattedNextWeek = formatDate(nextWeek);
+
+    // Return the date range as an array
+    return [formattedToday, formattedNextWeek];
+}
+
+function getMonthDateRange() {
+    // Get today's date
+    const today = new Date();
+
+    // Calculate the date after one week
+    const nextWeek = new Date(today);
+    nextWeek.setDate(nextWeek.getDate() + 30); //this can be issue if range is not correct
+
+    // Format dates as 'YYYY-MM-DD'
+    const formattedToday = formatDate(today);
+    const formattedNextWeek = formatDate(nextWeek);
+
+    // Return the date range as an array
+    return [formattedToday, formattedNextWeek];
+}
+
+// Function to format date as 'YYYY-MM-DD'
+function formatDate(date) {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
 }
