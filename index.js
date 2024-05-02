@@ -84,7 +84,7 @@ Offer Amount: ${wtd.totalSharesValue} `;
 }
 
 async function publicCompanies() {
-    const date = ['2024-05-01', '2024-05-08']; //getWeekDateRange();
+    const date = getWeekDateRange();
     const IPOs = await getIPOdataV2(date);
 
     const whiteCompanies = [];
@@ -94,7 +94,7 @@ async function publicCompanies() {
         debugger;
         console.log(IPO.date);
 
-        let proceed = true; //isToday(IPO.date);
+        let proceed = isToday(IPO.date);
         console.log(proceed);
         if (proceed == true && IPO.status == 'expected') {
             whiteCompanies.push(IPO);
