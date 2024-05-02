@@ -25,6 +25,8 @@ var job = new CronJob('0 * * * *', function () {
 });
 job.start();
 
+publicCompanies();
+
 async function processIPOs() {
     const date = getWeekDateRange();
     const IPOs = await getIPOdataV2(date);
@@ -59,7 +61,7 @@ async function processWithdarawls() {
     console.log(withdrawns);
 
     for (let IPO of withdrawns) {
-        if (IPO.status == 'withdrawn') {
+        if (IPO.status == 'expected') {
             whiteCompanies.push(IPO);
         }
     }
@@ -84,16 +86,19 @@ Offer Amount: ${wtd.totalSharesValue} `;
 }
 
 async function publicCompanies() {
-    const date = getWeekDateRange();
+    const date = ['2024-05-01', '2024-05-08']; //getWeekDateRange();
     const IPOs = await getIPOdataV2(date);
 
     const whiteCompanies = [];
 
     for (let IPO of IPOs) {
+        console.log(IPO);
+        debugger;
         console.log(IPO.date);
 
-        let proceed = isToday(IPO.date);
-        if (proceed == true && IPO.status == 'withdrawn') {
+        let proceed = true; //isToday(IPO.date);
+        console.log(proceed);
+        if (proceed == true && IPO.status == 'expected') {
             whiteCompanies.push(IPO);
         }
     }
@@ -117,6 +122,7 @@ Shares: ${IPO.numberOfShares}
 Expected IPO Date: ${IPO.date}
 Offer Amount: ${IPO.totalSharesValue} `;
         console.log(tweet);
+        debugger;
 
         tweetID = await makeTweet(tweet, true, tweetID);
     }
