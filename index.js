@@ -25,8 +25,6 @@ var job = new CronJob('0 * * * *', function () {
 });
 job.start();
 
-publicCompanies();
-
 async function processIPOs() {
     const date = getWeekDateRange();
     const IPOs = await getIPOdataV2(date);
