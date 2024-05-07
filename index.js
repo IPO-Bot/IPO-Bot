@@ -39,13 +39,13 @@ async function processIPOs() {
         return;
     }
     for (let IPO of IPOs) {
-        let tweet = `Symbol: $${IPO.symbol}
+        let tweet = `Symbol: $${IPO.proposedTickerSymbol}
 Company: ${IPO.name}
 Exchange: ${IPO.exchange}
 Price: ${IPO.price} USD
 Shares: ${IPO.numberOfShares}
 Expected IPO Date: ${IPO.date}
-Offer Amount: ${IPO.totalSharesValue} `;
+Offer Amount: ${formatNumber(IPO.totalSharesValue)} `;
         console.log(tweet);
 
         tweetID = await makeTweet(tweet, true, tweetID);
@@ -118,7 +118,7 @@ Exchange: ${IPO.exchange}
 Price: ${IPO.price} USD
 Shares: ${IPO.numberOfShares}
 Expected IPO Date: ${IPO.date}
-Offer Amount: ${IPO.totalSharesValue} `;
+Offer Amount: ${formatNumber(IPO.totalSharesValue)} `;
         console.log(tweet);
         debugger;
 
@@ -240,4 +240,14 @@ function formatDate(date) {
     const month = String(date.getMonth() + 1).padStart(2, '0');
     const day = String(date.getDate()).padStart(2, '0');
     return `${year}-${month}-${day}`;
+}
+
+function formatNumber(number) {
+    // Convert number to fixed 2 decimal places
+    const formattedNumber = Number(number).toFixed(2);
+
+    // Use toLocaleString for adding commas
+    const numberWithCommas = formattedNumber.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+
+    return `$${numberWithCommas}`;
 }
