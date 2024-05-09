@@ -39,7 +39,7 @@ async function processIPOs() {
         return;
     }
     for (let IPO of IPOs) {
-        let tweet = `Symbol: $${IPO.proposedTickerSymbol}
+        let tweet = `Symbol: $${IPO.symbol}
 Company: ${IPO.name}
 Exchange: ${IPO.exchange}
 Price: ${IPO.price} USD
@@ -112,7 +112,7 @@ async function publicCompanies() {
         return;
     }
     for (let IPO of whiteCompanies) {
-        let tweet = `Symbol: $${IPO.proposedTickerSymbol}
+        let tweet = `Symbol: $${IPO.symbol}
 Company: ${IPO.name}
 Exchange: ${IPO.exchange}
 Price: ${IPO.price} USD
